@@ -1,0 +1,59 @@
+Determining if the pthread_create exist failed with the following output:
+Change Dir: /home/enoch/Desktop/cis563/projects/project03/cis563-2019-assignment/Build/Release/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_2b6c8/fast"
+make[1]: Entering directory '/home/enoch/Desktop/cis563/projects/project03/cis563-2019-assignment/Build/Release/CMakeFiles/CMakeTmp'
+/usr/bin/make -f CMakeFiles/cmTC_2b6c8.dir/build.make CMakeFiles/cmTC_2b6c8.dir/build
+make[2]: Entering directory '/home/enoch/Desktop/cis563/projects/project03/cis563-2019-assignment/Build/Release/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_2b6c8.dir/CheckSymbolExists.cxx.o
+/usr/bin/c++     -Wno-reorder -Wno-sign-compare -Wno-format-nonliteral -Wno-unused-but-set-variable -Wno-misleading-indentation -Wno-unused-variable -Wno-maybe-uninitialized -fPIC -Wall -Werror=all -Wextra -Wno-unused-parameter -Wcast-align -Wformat=2 -Winit-self -Wmissing-include-dirs -Woverloaded-virtual -Wredundant-decls -march=native -fno-math-errno    -o CMakeFiles/cmTC_2b6c8.dir/CheckSymbolExists.cxx.o -c /home/enoch/Desktop/cis563/projects/project03/cis563-2019-assignment/Build/Release/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx
+Linking CXX executable cmTC_2b6c8
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_2b6c8.dir/link.txt --verbose=1
+/usr/bin/c++    -Wno-reorder -Wno-sign-compare -Wno-format-nonliteral -Wno-unused-but-set-variable -Wno-misleading-indentation -Wno-unused-variable -Wno-maybe-uninitialized -fPIC -Wall -Werror=all -Wextra -Wno-unused-parameter -Wcast-align -Wformat=2 -Winit-self -Wmissing-include-dirs -Woverloaded-virtual -Wredundant-decls -march=native -fno-math-errno     CMakeFiles/cmTC_2b6c8.dir/CheckSymbolExists.cxx.o  -o cmTC_2b6c8 -rdynamic 
+CMakeFiles/cmTC_2b6c8.dir/CheckSymbolExists.cxx.o: In function `main':
+CheckSymbolExists.cxx:(.text+0x1b): undefined reference to `pthread_create'
+collect2: error: ld returned 1 exit status
+CMakeFiles/cmTC_2b6c8.dir/build.make:97: recipe for target 'cmTC_2b6c8' failed
+make[2]: *** [cmTC_2b6c8] Error 1
+make[2]: Leaving directory '/home/enoch/Desktop/cis563/projects/project03/cis563-2019-assignment/Build/Release/CMakeFiles/CMakeTmp'
+Makefile:126: recipe for target 'cmTC_2b6c8/fast' failed
+make[1]: *** [cmTC_2b6c8/fast] Error 2
+make[1]: Leaving directory '/home/enoch/Desktop/cis563/projects/project03/cis563-2019-assignment/Build/Release/CMakeFiles/CMakeTmp'
+
+File /home/enoch/Desktop/cis563/projects/project03/cis563-2019-assignment/Build/Release/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:
+/* */
+#include <pthread.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef pthread_create
+  return ((int*)(&pthread_create))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+
+Determining if the function pthread_create exists in the pthreads failed with the following output:
+Change Dir: /home/enoch/Desktop/cis563/projects/project03/cis563-2019-assignment/Build/Release/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_9272a/fast"
+make[1]: Entering directory '/home/enoch/Desktop/cis563/projects/project03/cis563-2019-assignment/Build/Release/CMakeFiles/CMakeTmp'
+/usr/bin/make -f CMakeFiles/cmTC_9272a.dir/build.make CMakeFiles/cmTC_9272a.dir/build
+make[2]: Entering directory '/home/enoch/Desktop/cis563/projects/project03/cis563-2019-assignment/Build/Release/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_9272a.dir/CheckFunctionExists.cxx.o
+/usr/bin/c++     -Wno-reorder -Wno-sign-compare -Wno-format-nonliteral -Wno-unused-but-set-variable -Wno-misleading-indentation -Wno-unused-variable -Wno-maybe-uninitialized -fPIC -Wall -Werror=all -Wextra -Wno-unused-parameter -Wcast-align -Wformat=2 -Winit-self -Wmissing-include-dirs -Woverloaded-virtual -Wredundant-decls -march=native -fno-math-errno -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTC_9272a.dir/CheckFunctionExists.cxx.o -c /home/enoch/Desktop/cis563/projects/project03/cis563-2019-assignment/Build/Release/CMakeFiles/CheckLibraryExists/CheckFunctionExists.cxx
+Linking CXX executable cmTC_9272a
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_9272a.dir/link.txt --verbose=1
+/usr/bin/c++    -Wno-reorder -Wno-sign-compare -Wno-format-nonliteral -Wno-unused-but-set-variable -Wno-misleading-indentation -Wno-unused-variable -Wno-maybe-uninitialized -fPIC -Wall -Werror=all -Wextra -Wno-unused-parameter -Wcast-align -Wformat=2 -Winit-self -Wmissing-include-dirs -Woverloaded-virtual -Wredundant-decls -march=native -fno-math-errno -DCHECK_FUNCTION_EXISTS=pthread_create    CMakeFiles/cmTC_9272a.dir/CheckFunctionExists.cxx.o  -o cmTC_9272a -rdynamic -lpthreads 
+/usr/bin/ld: cannot find -lpthreads
+collect2: error: ld returned 1 exit status
+CMakeFiles/cmTC_9272a.dir/build.make:97: recipe for target 'cmTC_9272a' failed
+make[2]: *** [cmTC_9272a] Error 1
+make[2]: Leaving directory '/home/enoch/Desktop/cis563/projects/project03/cis563-2019-assignment/Build/Release/CMakeFiles/CMakeTmp'
+Makefile:126: recipe for target 'cmTC_9272a/fast' failed
+make[1]: *** [cmTC_9272a/fast] Error 2
+make[1]: Leaving directory '/home/enoch/Desktop/cis563/projects/project03/cis563-2019-assignment/Build/Release/CMakeFiles/CMakeTmp'
+
+

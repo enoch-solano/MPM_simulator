@@ -1,0 +1,55 @@
+Determining if the pthread_create exist failed with the following output:
+Change Dir: /home/enoch/Desktop/cis563/projects/project03/cis563-2019-assignment/build/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_d5960/fast"
+/usr/bin/make -f CMakeFiles/cmTC_d5960.dir/build.make CMakeFiles/cmTC_d5960.dir/build
+make[1]: Entering directory '/home/enoch/Desktop/cis563/projects/project03/cis563-2019-assignment/build/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_d5960.dir/CheckSymbolExists.cxx.o
+/usr/bin/c++     -Wno-reorder -Wno-sign-compare -Wno-format-nonliteral -Wno-unused-but-set-variable -Wno-misleading-indentation -Wno-unused-variable -Wno-maybe-uninitialized -fPIC -Wall -Werror=all -Wextra -Wno-unused-parameter -Wcast-align -Wformat=2 -Winit-self -Wmissing-include-dirs -Woverloaded-virtual -Wredundant-decls -march=native -fno-math-errno    -o CMakeFiles/cmTC_d5960.dir/CheckSymbolExists.cxx.o -c /home/enoch/Desktop/cis563/projects/project03/cis563-2019-assignment/build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx
+Linking CXX executable cmTC_d5960
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_d5960.dir/link.txt --verbose=1
+/usr/bin/c++    -Wno-reorder -Wno-sign-compare -Wno-format-nonliteral -Wno-unused-but-set-variable -Wno-misleading-indentation -Wno-unused-variable -Wno-maybe-uninitialized -fPIC -Wall -Werror=all -Wextra -Wno-unused-parameter -Wcast-align -Wformat=2 -Winit-self -Wmissing-include-dirs -Woverloaded-virtual -Wredundant-decls -march=native -fno-math-errno     CMakeFiles/cmTC_d5960.dir/CheckSymbolExists.cxx.o  -o cmTC_d5960 -rdynamic 
+CMakeFiles/cmTC_d5960.dir/CheckSymbolExists.cxx.o: In function `main':
+CheckSymbolExists.cxx:(.text+0x1b): undefined reference to `pthread_create'
+collect2: error: ld returned 1 exit status
+CMakeFiles/cmTC_d5960.dir/build.make:97: recipe for target 'cmTC_d5960' failed
+make[1]: *** [cmTC_d5960] Error 1
+make[1]: Leaving directory '/home/enoch/Desktop/cis563/projects/project03/cis563-2019-assignment/build/CMakeFiles/CMakeTmp'
+Makefile:126: recipe for target 'cmTC_d5960/fast' failed
+make: *** [cmTC_d5960/fast] Error 2
+
+File /home/enoch/Desktop/cis563/projects/project03/cis563-2019-assignment/build/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:
+/* */
+#include <pthread.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef pthread_create
+  return ((int*)(&pthread_create))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+
+Determining if the function pthread_create exists in the pthreads failed with the following output:
+Change Dir: /home/enoch/Desktop/cis563/projects/project03/cis563-2019-assignment/build/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_355af/fast"
+/usr/bin/make -f CMakeFiles/cmTC_355af.dir/build.make CMakeFiles/cmTC_355af.dir/build
+make[1]: Entering directory '/home/enoch/Desktop/cis563/projects/project03/cis563-2019-assignment/build/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_355af.dir/CheckFunctionExists.cxx.o
+/usr/bin/c++     -Wno-reorder -Wno-sign-compare -Wno-format-nonliteral -Wno-unused-but-set-variable -Wno-misleading-indentation -Wno-unused-variable -Wno-maybe-uninitialized -fPIC -Wall -Werror=all -Wextra -Wno-unused-parameter -Wcast-align -Wformat=2 -Winit-self -Wmissing-include-dirs -Woverloaded-virtual -Wredundant-decls -march=native -fno-math-errno -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTC_355af.dir/CheckFunctionExists.cxx.o -c /home/enoch/Desktop/cis563/projects/project03/cis563-2019-assignment/build/CMakeFiles/CheckLibraryExists/CheckFunctionExists.cxx
+Linking CXX executable cmTC_355af
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_355af.dir/link.txt --verbose=1
+/usr/bin/c++    -Wno-reorder -Wno-sign-compare -Wno-format-nonliteral -Wno-unused-but-set-variable -Wno-misleading-indentation -Wno-unused-variable -Wno-maybe-uninitialized -fPIC -Wall -Werror=all -Wextra -Wno-unused-parameter -Wcast-align -Wformat=2 -Winit-self -Wmissing-include-dirs -Woverloaded-virtual -Wredundant-decls -march=native -fno-math-errno -DCHECK_FUNCTION_EXISTS=pthread_create    CMakeFiles/cmTC_355af.dir/CheckFunctionExists.cxx.o  -o cmTC_355af -rdynamic -lpthreads 
+/usr/bin/ld: cannot find -lpthreads
+collect2: error: ld returned 1 exit status
+CMakeFiles/cmTC_355af.dir/build.make:97: recipe for target 'cmTC_355af' failed
+make[1]: *** [cmTC_355af] Error 1
+make[1]: Leaving directory '/home/enoch/Desktop/cis563/projects/project03/cis563-2019-assignment/build/CMakeFiles/CMakeTmp'
+Makefile:126: recipe for target 'cmTC_355af/fast' failed
+make: *** [cmTC_355af/fast] Error 2
+
+
