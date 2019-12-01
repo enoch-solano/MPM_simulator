@@ -53,3 +53,46 @@ Makefile:126: recipe for target 'cmTC_355af/fast' failed
 make: *** [cmTC_355af/fast] Error 2
 
 
+Performing C++ SOURCE FILE Test CMAKE_HAVE_LIBC_PTHREAD failed with the following output:
+Change Dir: /home/enoch/Desktop/cis563/projects/project03/cis563-2019-assignment/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make cmTC_4dd26/fast && /usr/bin/make -f CMakeFiles/cmTC_4dd26.dir/build.make CMakeFiles/cmTC_4dd26.dir/build
+make[1]: Entering directory '/home/enoch/Desktop/cis563/projects/project03/cis563-2019-assignment/build/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_4dd26.dir/src.cxx.o
+/usr/bin/c++    -Wno-reorder -Wno-sign-compare -Wno-format-nonliteral -Wno-unused-but-set-variable -Wno-misleading-indentation -Wno-unused-variable -Wno-maybe-uninitialized -fPIC -Wall -Werror=all -Wextra -Wno-unused-parameter -Wcast-align -Wformat=2 -Winit-self -Wmissing-include-dirs -Woverloaded-virtual -Wredundant-decls -march=native -fno-math-errno -DCMAKE_HAVE_LIBC_PTHREAD   -o CMakeFiles/cmTC_4dd26.dir/src.cxx.o -c /home/enoch/Desktop/cis563/projects/project03/cis563-2019-assignment/build/CMakeFiles/CMakeTmp/src.cxx
+Linking CXX executable cmTC_4dd26
+/usr/local/bin/cmake -E cmake_link_script CMakeFiles/cmTC_4dd26.dir/link.txt --verbose=1
+/usr/bin/c++   -Wno-reorder -Wno-sign-compare -Wno-format-nonliteral -Wno-unused-but-set-variable -Wno-misleading-indentation -Wno-unused-variable -Wno-maybe-uninitialized -fPIC -Wall -Werror=all -Wextra -Wno-unused-parameter -Wcast-align -Wformat=2 -Winit-self -Wmissing-include-dirs -Woverloaded-virtual -Wredundant-decls -march=native -fno-math-errno -DCMAKE_HAVE_LIBC_PTHREAD    -rdynamic CMakeFiles/cmTC_4dd26.dir/src.cxx.o  -o cmTC_4dd26 
+CMakeFiles/cmTC_4dd26.dir/src.cxx.o: In function `main':
+src.cxx:(.text+0x3e): undefined reference to `pthread_create'
+src.cxx:(.text+0x4a): undefined reference to `pthread_detach'
+src.cxx:(.text+0x5b): undefined reference to `pthread_join'
+src.cxx:(.text+0x6f): undefined reference to `pthread_atfork'
+collect2: error: ld returned 1 exit status
+CMakeFiles/cmTC_4dd26.dir/build.make:86: recipe for target 'cmTC_4dd26' failed
+make[1]: *** [cmTC_4dd26] Error 1
+make[1]: Leaving directory '/home/enoch/Desktop/cis563/projects/project03/cis563-2019-assignment/build/CMakeFiles/CMakeTmp'
+Makefile:121: recipe for target 'cmTC_4dd26/fast' failed
+make: *** [cmTC_4dd26/fast] Error 2
+
+
+Source file was:
+#include <pthread.h>
+
+void* test_func(void* data)
+{
+  return data;
+}
+
+int main(void)
+{
+  pthread_t thread;
+  pthread_create(&thread, NULL, test_func, NULL);
+  pthread_detach(thread);
+  pthread_join(thread, NULL);
+  pthread_atfork(NULL, NULL, NULL);
+  pthread_exit(NULL);
+
+  return 0;
+}
+

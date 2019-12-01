@@ -1,6 +1,3 @@
-if("v1.1.0" STREQUAL "")
-  message(FATAL_ERROR "Tag for git checkout should not be empty.")
-endif()
 
 execute_process(
   COMMAND "/usr/bin/git" rev-list --max-count=1 HEAD
@@ -75,7 +72,7 @@ if(error_code OR is_remote_ref OR NOT ("${tag_sha}" STREQUAL "${head_sha}"))
     # perform git pull --rebase
     if(need_stash)
       execute_process(
-        COMMAND "/usr/bin/git" stash save --quiet
+        COMMAND "/usr/bin/git" stash save --all;--quiet
         WORKING_DIRECTORY "/home/enoch/Desktop/cis563/projects/project03/cis563-2019-assignment/build/partio-src"
         RESULT_VARIABLE error_code
         )
@@ -149,7 +146,7 @@ if(error_code OR is_remote_ref OR NOT ("${tag_sha}" STREQUAL "${head_sha}"))
   endif()
 
   execute_process(
-    COMMAND "/usr/bin/git" submodule update --recursive 
+    COMMAND "/usr/bin/git" submodule update --recursive --init 
     WORKING_DIRECTORY "/home/enoch/Desktop/cis563/projects/project03/cis563-2019-assignment/build/partio-src/"
     RESULT_VARIABLE error_code
     )

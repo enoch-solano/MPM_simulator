@@ -683,6 +683,9 @@ igl_stb_image_SOURCE_DIR:STATIC=/home/enoch/Desktop/cis563/projects/project03/ci
 //Dependencies for the target
 imgui_LIB_DEPENDS:STATIC=general;glad;general;glfw;
 
+//Dependencies for target
+mesh_query0.1_LIB_DEPENDS:STATIC=
+
 //Value Computed by CMake
 osqp_BINARY_DIR:STATIC=/home/enoch/Desktop/cis563/projects/project03/cis563-2019-assignment/Deps/osqp/build
 

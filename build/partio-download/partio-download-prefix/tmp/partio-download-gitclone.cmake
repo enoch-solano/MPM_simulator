@@ -1,14 +1,5 @@
-if("v1.1.0" STREQUAL "")
-  message(FATAL_ERROR "Tag for git checkout should not be empty.")
-endif()
 
-set(run 0)
-
-if("/home/enoch/Desktop/cis563/projects/project03/cis563-2019-assignment/build/partio-download/partio-download-prefix/src/partio-download-stamp/partio-download-gitinfo.txt" IS_NEWER_THAN "/home/enoch/Desktop/cis563/projects/project03/cis563-2019-assignment/build/partio-download/partio-download-prefix/src/partio-download-stamp/partio-download-gitclone-lastrun.txt")
-  set(run 1)
-endif()
-
-if(NOT run)
+if(NOT "/home/enoch/Desktop/cis563/projects/project03/cis563-2019-assignment/build/partio-download/partio-download-prefix/src/partio-download-stamp/partio-download-gitinfo.txt" IS_NEWER_THAN "/home/enoch/Desktop/cis563/projects/project03/cis563-2019-assignment/build/partio-download/partio-download-prefix/src/partio-download-stamp/partio-download-gitclone-lastrun.txt")
   message(STATUS "Avoiding repeated git clone, stamp file is up to date: '/home/enoch/Desktop/cis563/projects/project03/cis563-2019-assignment/build/partio-download/partio-download-prefix/src/partio-download-stamp/partio-download-gitclone-lastrun.txt'")
   return()
 endif()
@@ -21,12 +12,12 @@ if(error_code)
   message(FATAL_ERROR "Failed to remove directory: '/home/enoch/Desktop/cis563/projects/project03/cis563-2019-assignment/build/partio-src'")
 endif()
 
-# try the clone 3 times incase there is an odd git clone issue
+# try the clone 3 times in case there is an odd git clone issue
 set(error_code 1)
 set(number_of_tries 0)
 while(error_code AND number_of_tries LESS 3)
   execute_process(
-    COMMAND "/usr/bin/git" clone --origin "origin" "https://github.com/wdas/partio.git" "partio-src"
+    COMMAND "/usr/bin/git"  clone  "https://github.com/wdas/partio.git" "partio-src"
     WORKING_DIRECTORY "/home/enoch/Desktop/cis563/projects/project03/cis563-2019-assignment/build"
     RESULT_VARIABLE error_code
     )
@@ -41,7 +32,7 @@ if(error_code)
 endif()
 
 execute_process(
-  COMMAND "/usr/bin/git" checkout v1.1.0
+  COMMAND "/usr/bin/git"  checkout v1.1.0 --
   WORKING_DIRECTORY "/home/enoch/Desktop/cis563/projects/project03/cis563-2019-assignment/build/partio-src"
   RESULT_VARIABLE error_code
   )
@@ -50,16 +41,7 @@ if(error_code)
 endif()
 
 execute_process(
-  COMMAND "/usr/bin/git" submodule init 
-  WORKING_DIRECTORY "/home/enoch/Desktop/cis563/projects/project03/cis563-2019-assignment/build/partio-src"
-  RESULT_VARIABLE error_code
-  )
-if(error_code)
-  message(FATAL_ERROR "Failed to init submodules in: '/home/enoch/Desktop/cis563/projects/project03/cis563-2019-assignment/build/partio-src'")
-endif()
-
-execute_process(
-  COMMAND "/usr/bin/git" submodule update --recursive 
+  COMMAND "/usr/bin/git"  submodule update --recursive --init 
   WORKING_DIRECTORY "/home/enoch/Desktop/cis563/projects/project03/cis563-2019-assignment/build/partio-src"
   RESULT_VARIABLE error_code
   )
@@ -73,7 +55,6 @@ execute_process(
   COMMAND ${CMAKE_COMMAND} -E copy
     "/home/enoch/Desktop/cis563/projects/project03/cis563-2019-assignment/build/partio-download/partio-download-prefix/src/partio-download-stamp/partio-download-gitinfo.txt"
     "/home/enoch/Desktop/cis563/projects/project03/cis563-2019-assignment/build/partio-download/partio-download-prefix/src/partio-download-stamp/partio-download-gitclone-lastrun.txt"
-  WORKING_DIRECTORY "/home/enoch/Desktop/cis563/projects/project03/cis563-2019-assignment/build/partio-src"
   RESULT_VARIABLE error_code
   )
 if(error_code)

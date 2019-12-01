@@ -1,7 +1,7 @@
 file(REMOVE_RECURSE
   "CMakeFiles/triangle.dir/triangle.c.o"
-  "libtriangle.pdb"
   "libtriangle.a"
+  "libtriangle.pdb"
 )
 
 # Per-language clean rules from dependency scanning.

@@ -1,7 +1,7 @@
 file(REMOVE_RECURSE
   "CMakeFiles/igl_stb_image.dir/igl_stb_image.cpp.o"
-  "libigl_stb_image.pdb"
   "libigl_stb_image.a"
+  "libigl_stb_image.pdb"
 )
 
 # Per-language clean rules from dependency scanning.

@@ -1,7 +1,7 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/mass_spring.dir/main.cpp.o"
-  "../../../Projects/mass_spring/mass_spring.pdb"
   "../../../Projects/mass_spring/mass_spring"
+  "../../../Projects/mass_spring/mass_spring.pdb"
+  "CMakeFiles/mass_spring.dir/main.cpp.o"
 )
 
 # Per-language clean rules from dependency scanning.

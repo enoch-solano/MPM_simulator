@@ -1,8 +1,8 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/tetgen.dir/tetgen.cxx.o"
   "CMakeFiles/tetgen.dir/predicates.cxx.o"
-  "libtetgen.pdb"
+  "CMakeFiles/tetgen.dir/tetgen.cxx.o"
   "libtetgen.a"
+  "libtetgen.pdb"
 )
 
 # Per-language clean rules from dependency scanning.

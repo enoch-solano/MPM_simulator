@@ -5,6 +5,12 @@ Projects/mass_spring/CMakeFiles/mass_spring.dir/main.cpp.o
  /home/enoch/Desktop/cis563/projects/project03/cis563-2019-assignment/Projects/mass_spring/MassSpringSystem.h
  /home/enoch/Desktop/cis563/projects/project03/cis563-2019-assignment/Projects/mass_spring/SimulationDriver.h
  /home/enoch/Desktop/cis563/projects/project03/cis563-2019-assignment/Projects/mass_spring/main.cpp
+ /home/enoch/Desktop/cis563/projects/project03/cis563-2019-assignment/Projects/mass_spring/mesh_query0.1/bounding_box.h
+ /home/enoch/Desktop/cis563/projects/project03/cis563-2019-assignment/Projects/mass_spring/mesh_query0.1/bounding_box_tree.h
+ /home/enoch/Desktop/cis563/projects/project03/cis563-2019-assignment/Projects/mass_spring/mesh_query0.1/mesh_query.h
+ /home/enoch/Desktop/cis563/projects/project03/cis563-2019-assignment/Projects/mass_spring/mesh_query0.1/predicates.h
+ /home/enoch/Desktop/cis563/projects/project03/cis563-2019-assignment/Projects/mass_spring/mesh_query0.1/util.h
+ /home/enoch/Desktop/cis563/projects/project03/cis563-2019-assignment/Projects/mass_spring/mesh_query0.1/vec.h
  /usr/local/include/eigen3/Eigen/Cholesky
  /usr/local/include/eigen3/Eigen/Core
  /usr/local/include/eigen3/Eigen/Dense
