@@ -9,6 +9,7 @@ template<class T, int dim>
 class SimulationDriver{
 public:
     using TV = Eigen::Matrix<T,dim,1>;
+    using TM = Eigen::Matrix<T,dim,dim>;
     using SpMat = Eigen::SparseMatrix<T>;
     using Vec = Eigen::Matrix<T,Eigen::Dynamic,1>;
 
@@ -20,26 +21,42 @@ public:
     T sphere_radius;
     T ground;
 
-    SimulationDriver(TV min, TV max, T dx)
-      : mpm(min, max, dx), dt((T)1e-3)   // TODO: choose a better/worse dt?
+    // particle constants
+    T E;    // youngs modulus
+    T nu;
+    T mu;
+    T lambda;
+
+
+    SimulationDriver(TV min, TV max, T dx, T E, T nu)
+      : mpm(min, max, dx), dt((T)1e-3), E(E), nu(nu)
     {
+        mu = E / (2 * (1 + nu));
+        lambda = E * nu / ((1 + nu) * (1 - 2 * nu));
+
+        mpm.E = E;
+        mpm.nu = nu;
+        mpm.mu = mu;
+        mpm.lambda = lambda;
+
         gravity.setZero();
         gravity(1) = -9.8 * 0.15;
-
-        sphere_center = TV::Ones()*0.5;
-        sphere_radius = 0.2;
-        ground = 0.1;
 
         TV min_box = TV::Ones()*0.3;
         TV max_box = TV::Ones()*0.7;
 
-        printf("populating particles...\n");
         mpm.populate_cube(min_box, max_box);
-        printf("finished populating particles.\n");
     }
 
     void run(const int max_frame)
     {
+        // TM ex = TM::Random();
+        // std::cout << ex << std::endl;
+        // for (int i = 0; i < dim; i++) {
+        //     ex(i, dim-1) *= -1;
+        // }
+        // std::cout << ex << std::endl;
+
         for(int frame = 1; frame < max_frame; frame++) {
             std::cout << "Frame " << frame << std::endl;
 
@@ -69,6 +86,7 @@ public:
         // compute total grid momentum after p2g
 
         mpm.compute_weights_3D();
+        // mpm.sanity_check();
         // mpm.print_particles();
 
 
@@ -88,11 +106,8 @@ public:
         // boundary conditions
         mpm.setBoundaryVelocities(3);
 
-        // TODO: (sanity checks)
-        // compute total grid momentum after g2p
-        // compute total particle momentum before g2p
-
-        // evolve force
+        // evolve deformation gradient
+        mpm.evolveF(dt);
 
         // transfer grid moment to particles
         T flip = 0.95;

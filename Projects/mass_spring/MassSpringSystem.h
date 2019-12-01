@@ -159,11 +159,14 @@ template<class T, int dim>
 class Particle {
 public:
     using TV = Eigen::Matrix<T,dim,1>;
+    using TM = Eigen::Matrix<T,dim,dim>;
 
     T  m;   // particle mass
     TV x;   // particle position
     TV v;   // particle velocity
     T vol;  // particle volume
+    TM F;   // particle deformation
+
 
     std::array<int, dim> base_node;         // index of base node
     std::array<T, 3*dim> weights;             // weights of nodes (in 1d along all dim)
@@ -171,9 +174,9 @@ public:
 
 
     std::array<T, dim*dim*dim> weights_ijk;             // weights of nodes in 3D
-    std::array<T, dim*dim*dim> weight_gradients_ijk;    // weight gradients of nodes in 3D
+    std::array<TV, dim*dim*dim> weight_gradients_ijk;    // weight gradients of nodes in 3D
 
-    Particle() : m((T) 0), x(TV::Zero()), v(TV::Zero()), vol((T) 0) {
+    Particle() : m((T) 0), x(TV::Zero()), v(TV::Zero()), vol((T) 0), F(TM::Identity()) {
         for (int i = 0; i < dim; i++) {
             base_node[i] = 0;
         }
@@ -185,12 +188,12 @@ public:
 
         for (int i = 0; i < dim*dim*dim; i++) {
             weights_ijk[i] = 0;
-            weight_gradients_ijk[i] = 0;
+            weight_gradients_ijk[i] = TV::Zero();
         }
     }
 
     Particle(TV x, T m, T vol)
-        : m(m), x(x), v(TV::Zero()), vol(vol)
+        : m(m), x(x), v(TV::Zero()), vol(vol), F(TM::Identity())
         {
             for (int i = 0; i < dim; i++) {
                 base_node[i] = 0;
@@ -203,12 +206,12 @@ public:
 
             for (int i = 0; i < dim*dim*dim; i++) {
                 weights_ijk[i] = 0;
-                weight_gradients_ijk[i] = 0;
+                weight_gradients_ijk[i] = TV::Zero();
             }
         }
 
     Particle(const Particle &p)
-        : m(p.m), x(p.x), v(p.v), vol(p.vol)
+        : m(p.m), x(p.x), v(p.v), vol(p.vol), F(p.F)
         {
             for (int i = 0; i < dim; i++) {
                 base_node[i] = p.base_node[i];
@@ -259,6 +262,7 @@ public:
         T base_node_i = std::floor(x_idx - 0.5) + 1;
         b(d) = static_cast<int>(base_node_i) - 1;
 
+        // weights
         T d0 = x_idx - base_node_i + 1;
         T z = 1.5 - d0;
         T z2 = z * z;
@@ -271,6 +275,11 @@ public:
         T zz = 1.5 - d2;
         T zz2 = zz * zz;
         w(d, 2) = 0.5 * zz2;
+
+        // weight gradients
+        dw(d, 0) = -z;
+        dw(d, 1) = -2*d1;
+        dw(d, 2) = zz;
     }
 
     T w_(int i, int j, int k) const {
@@ -279,6 +288,14 @@ public:
 
     T& w_(int i, int j, int k) {
         return weights_ijk[to1D(i,j,k)];
+    }
+
+    TV dw_(int i, int j, int k) const {
+        return weight_gradients_ijk[to1D(i,j,k)];
+    }
+
+    TV& dw_(int i, int j, int k) {
+        return weight_gradients_ijk[to1D(i,j,k)];
     }
 
     // helper function to convert 3D index to 1D
@@ -291,9 +308,13 @@ template<class T, int dim>
 class MPMSystem {
 public:
     using TV = Eigen::Matrix<T,dim,1>;
+    using TM = Eigen::Matrix<T,dim,dim>;
 
-    T youngs_modulus;
-    T damping_coeff;
+    // particle constants
+    T E;    // youngs modulus
+    T nu;
+    T mu;
+    T lambda;
 
     Grid<T, dim> grid;
     std::vector<Particle<T, dim>> particles;
@@ -336,31 +357,7 @@ public:
         }
     }
 
-
-
-    void compute_weights_3D() {
-        for (auto &p : particles) {
-            TV x_idx = p.x / grid.dx;
-
-            for (int d = 0; d < dim; d++) {
-                p.compute_weights_1D(d, x_idx(d));
-            }
-
-            for (int i = 0; i < 3; i++) {
-                T w_i = p.w(0, i);
-
-                for (int j = 0; j < 3; j++) {
-                    T w_ij = w_i * p.w(1, j);
-
-                    for (int k = 0; k < 3; k++) {
-                        T w_ijk = w_ij * p.w(2, k);
-
-                        p.w_(i,j,k) = w_ijk;
-                    }
-                }
-            }
-        }
-
+    void sanity_check() {
         for (auto &p : particles) {
             TV pos = TV::Zero();
             TV x_idx = p.x / grid.dx;
@@ -379,8 +376,87 @@ public:
                 }
             }
 
+            // should be the same:
             // printf("position: (%f, %f, %f)\n", x_idx(0), x_idx(1), x_idx(2));
             // printf("interpolated position: (%f, %f, %f)\n\n", pos(0), pos(1), pos(2));
+
+            for (int i = 0; i < 3; i++) {
+                if (std::abs(x_idx(i) - pos(i)) > 1e-5) {
+                    printf("expected %f, but got %f\n", x_idx(i), pos(i));
+                }
+            }
+        }
+
+        for (auto &p : particles) {
+            T sum = 0;
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    for (int k = 0; k < 3; k++) {
+                        sum += p.w_(i,j,k);
+                    }
+                }
+            }
+
+            // should be equal to 1
+            // printf("sum of weights: %f\n", sum);
+
+            if (std::abs(sum - 1.f) > 1e-5) {
+                printf("expected %f, but got %f\n", 1.f, sum);
+            }
+        }
+
+        for (auto &p : particles) {
+            TV sum = TV::Zero();
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    for (int k = 0; k < 3; k++) {
+                        sum += p.dw_(i,j,k);
+                    }
+                }
+            }
+
+            for (int i = 0; i < 3; i++) {
+                if (std::abs(sum[i]) < 1e-5) {
+                    sum[i] = 0.f;
+                }
+            }
+
+            // should be equal to (0,0,0)
+            // printf("sum of weight gradients: ");
+            // std::cout << sum.transpose() << std::endl;
+
+            for (int i = 0; i < 3; i++) {
+                if (std::abs(sum[i]) > 1e-5) {
+                    std::cout << "expected " << TV::Zero().transpose() << ", but got " << sum.transpose() << std::endl;
+                }
+            }
+        }
+    }
+
+    void compute_weights_3D() {
+        for (auto &p : particles) {
+            TV x_idx = p.x / grid.dx;
+
+            for (int d = 0; d < dim; d++) {
+                p.compute_weights_1D(d, x_idx(d));
+            }
+
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    for (int k = 0; k < 3; k++) {
+                        T w_ijk = p.w(0, i) * p.w(1, j) * p.w(2, k);
+
+                        p.w_(i,j,k) = w_ijk;
+
+                        TV dw_ijk;
+                        dw_ijk[0] = (p.dw(0, i) / grid.dx) * p.w(1, j) * p.w(2, k);
+                        dw_ijk[1] = p.w(0, i) * (p.dw(1, j) / grid.dx) * p.w(2, k);
+                        dw_ijk[2] = p.w(0, i) * p.w(1, j) * (p.dw(2, k) / grid.dx);
+
+                        p.dw_(i,j,k) = dw_ijk;
+                    }
+                }
+            }
         }
     }
 
@@ -419,14 +495,62 @@ public:
 
     void addGravity(TV gravity) {
         for (int i : grid.active_nodes) {
-            // printf("f before gravity: (%.3f, %.3f, %.3f)\n", grid.f(i)[0], grid.f(i)[1], grid.f(i)[2]);
             grid.f(i) = grid.f(i) + (grid.m(i) * gravity);
-            // printf("f after gravity:  (%.3f, %.3f, %.3f)\n\n", grid.f(i)[0], grid.f(i)[1], grid.f(i)[2]);
         }
     }
 
     void addElasticity() {
-        // TODO: implement this
+        for (auto &p : particles) {
+            //--- computing the First Piola-Kirchhoff stress, P ---//
+
+            //-- computes Polar SVD of F --//
+            Eigen::JacobiSVD<TM> svd(p.F, Eigen::ComputeFullU | Eigen::ComputeFullV);
+            TV sigma = svd.singularValues();
+            TM U = svd.matrixU();
+            TM V = svd.matrixV();
+
+            if (U.determinant() < 0) {
+                // TODO: check that we just negate last column in U/V matrices
+                for (int i = 0; i < dim; i++) {
+                    U(i, dim-1) *= -1;
+                }
+                sigma(dim-1) *= -1;
+            }
+
+            if (V.determinant() < 0) {
+                for (int i = 0; i < dim; i++) {
+                    V(i, dim-1) *= -1;
+                }
+                sigma(dim-1) *= -1;
+            }
+
+            //-- fixed corotated --//
+            TM R = U * V.transpose();
+            T  J = p.F.determinant();
+
+            TM A = (p.F.inverse()).transpose(); // TODO: implement P(sigma) from class13, p.43
+            A = J * A;
+
+            TM P = 2*mu*(p.F-R) + lambda*(J-1)*A;
+
+            //-- interpolate force --//
+            TM vol_P_Ft = p.vol * P * p.F.transpose();
+
+            for (int i = 0; i < 3; i++) {
+                int n_i = p.b(0) + i;
+
+                for (int j = 0; j < 3; j++) {
+                    int n_j = p.b(1) + j;
+
+                    for (int k = 0; k < 3; k++) {
+                        int n_k = p.b(2) + k;
+
+                        TV tmp = -vol_P_Ft * p.dw_(i,j,k);
+                        grid.f(n_i, n_j, n_k) = grid.f(n_i, n_j, n_k) + tmp;
+                    }
+                }
+            }
+        }
     }
 
     void updateGridVelocity(T dt) {
@@ -482,6 +606,28 @@ public:
                     grid.v(i,j,k) = TV::Zero();
                 }
             }
+        }
+    }
+
+    void evolveF(T dt) {
+        for (auto &p : particles) {
+            TM grad_vp = TM::Zero();
+            for (int i = 0; i < 3; i++) {
+                int n_i = p.b(0) + i;
+
+                for (int j = 0; j < 3; j++) {
+                    int n_j = p.b(1) + j;
+
+                    for (int k = 0; k < 3; k++) {
+                        int n_k = p.b(2) + k;
+
+                        // interpolates (splat) grid velocity
+                        grad_vp = grad_vp + grid.v(n_i, n_j, n_k) * p.dw_(i,j,k).transpose();
+                    }
+                }
+            }
+
+            p.F = (TM::Identity() + dt*grad_vp) * p.F;
         }
     }
 

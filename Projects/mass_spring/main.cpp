@@ -21,7 +21,10 @@ int main(int argc, char* argv[])
     TV max_corner = TV::Ones();
     T dx = 0.05;
 
-    SimulationDriver<T,dim> driver(min_corner, max_corner, dx);
+    T E = 1e4;
+    T nu = 0.3;
+
+    SimulationDriver<T,dim> driver(min_corner, max_corner, dx, E, nu);
 
     // simulate
     driver.run(240);
