@@ -21,8 +21,10 @@ int main(int argc, char* argv[])
     int num_vert = 2;
     const double vert[] = {1, 2, 3};
     int num_tri = 5;
-    const int tri[] = {1, 2, 3, 1, 3, 4};
+    const int tri[] = {1, 2, 3, 1, 3, 2};
     MeshObject* m = construct_mesh_object(num_vert, vert, num_tri, tri);
+    int as = 2;
+    as--;
 
     // grid parameters
     TV min_corner = TV::Zero();
