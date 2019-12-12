@@ -502,7 +502,6 @@ public:
     void addElasticity() {
         for (auto &p : particles) {
             //--- computing the First Piola-Kirchhoff stress, P ---//
-
             //-- computes Polar SVD of F --//
             Eigen::JacobiSVD<TM> svd(p.F, Eigen::ComputeFullU | Eigen::ComputeFullV);
             TV sigma = svd.singularValues();
@@ -510,7 +509,6 @@ public:
             TM V = svd.matrixV();
 
             if (U.determinant() < 0) {
-                // TODO: check that we just negate last column in U/V matrices
                 for (int i = 0; i < dim; i++) {
                     U(i, dim-1) *= -1;
                 }
