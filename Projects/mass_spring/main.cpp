@@ -13,6 +13,14 @@
 
 #include "SimulationDriver.h"
 
+void triangulate(std::vector<int> &idx, std::vector<int> &face_idx) {
+    for (int i = 0; i < face_idx.size()-2; i++) {
+        idx.push_back(face_idx[0]);
+        idx.push_back(face_idx[i+1]);
+        idx.push_back(face_idx[i+2]);
+    }
+}
+
 int import_mesh(std::vector<MeshObject*> &meshes, char *filename) {
     std::ifstream in(filename);
     if(!in) {
@@ -22,18 +30,46 @@ int import_mesh(std::vector<MeshObject*> &meshes, char *filename) {
 
     boost::char_separator<char> space_sep(" ");
 
+    std::vector<int> idx;
+    std::vector<double> verts;
+
     std::string line;
     while (std::getline(in, line)) {
         boost::tokenizer<boost::char_separator<char>> tokens(line, space_sep);
+
+        // continues if there are no tokens in this line
         if (tokens.begin() == tokens.end()) {
-            printf("skipping: %s", line.c_str());
             continue;
         }
 
-        for (const auto& t : tokens) {
-            std::cout << t << "\n";
+        // checks to see if line corresponds to a face line
+        if ((*tokens.begin()).compare("f") == 0) {
+            std::vector<int> face_idx;
+            for (auto tok = ++tokens.begin(); tok != tokens.end(); ++tok) {
+                boost::char_separator<char> sep("/");
+                boost::tokenizer<boost::char_separator<char>> tmp_tokens(*tok, sep);
+
+                // gets index of vertex position (minus 1 because objs are 1-indexed)
+                face_idx.push_back(std::stoi(*tmp_tokens.begin()) - 1);
+            }
+
+            // triangulates face vertices as needed
+            triangulate(idx, face_idx);
         }
 
+        // checks to see if token corresponds to a vertex line
+        if ((*tokens.begin()).compare("v") == 0) {
+            int vert_count = 0;
+            for (auto tok = ++tokens.begin(); tok != tokens.end(); ++tok) {
+                // doesn't allow more than three values per vertex
+                if (vert_count == 3) {
+                    continue;
+                }
+
+                verts.push_back(std::stod(*tok));
+                vert_count++;
+            }
+        }
     }
 
     in.close();
