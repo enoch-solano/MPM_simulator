@@ -8,6 +8,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "mesh_query0.1/mesh_query.h"
+
 
 
 template<class T, int dim>
@@ -321,6 +323,10 @@ public:
 
     MPMSystem(TV min, TV max, T dx)
         : grid(min, max, dx) {}
+
+    void populate_meshes(std::vector<MeshObject*> meshes) {
+        
+    }
 
     void populate_cube(TV min, TV max) {
         T rho = 1000;   // density

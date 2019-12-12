@@ -13,6 +13,10 @@
 
 #include "SimulationDriver.h"
 
+using T = float;
+constexpr int dim = 3;
+using TV = Eigen::Matrix<T,dim,1>;
+
 void triangulate(std::vector<int> &idx, std::vector<int> &face_idx) {
     for (int i = 0; i < face_idx.size()-2; i++) {
         idx.push_back(face_idx[0]);
@@ -21,7 +25,21 @@ void triangulate(std::vector<int> &idx, std::vector<int> &face_idx) {
     }
 }
 
-int import_mesh(std::vector<MeshObject*> &meshes, char *filename) {
+void compute_bounds(TV &min, TV &max, std::vector<double> &positions) {
+    for (int v = 0; v < positions.size(); v += 3) {
+        for (int i = 0; i < 3; i++) {
+            if (min(i) > positions[v+i]) {
+                min(i) = positions[v+i];
+            }
+
+            if (max(i) < positions[v+i]) {
+                max(i) = positions[v+i];
+            }
+        }
+    }
+}
+
+int parse_mesh(char *filename, std::vector<double> &positions, std::vector<int> &idx) {
     std::ifstream in(filename);
     if(!in) {
         std::cout << "Cannot open input file.\n";
@@ -29,9 +47,6 @@ int import_mesh(std::vector<MeshObject*> &meshes, char *filename) {
     }
 
     boost::char_separator<char> space_sep(" ");
-
-    std::vector<int> idx;
-    std::vector<double> verts;
 
     std::string line;
     while (std::getline(in, line)) {
@@ -59,55 +74,64 @@ int import_mesh(std::vector<MeshObject*> &meshes, char *filename) {
 
         // checks to see if token corresponds to a vertex line
         if ((*tokens.begin()).compare("v") == 0) {
-            int vert_count = 0;
+            int pos_count = 0;
             for (auto tok = ++tokens.begin(); tok != tokens.end(); ++tok) {
                 // doesn't allow more than three values per vertex
-                if (vert_count == 3) {
+                if (pos_count == 3) {
                     continue;
                 }
 
-                verts.push_back(std::stod(*tok));
-                vert_count++;
+                positions.push_back(std::stod(*tok));
+                pos_count++;
             }
         }
     }
 
     in.close();
-
     return 1;
 }
 
 int main(int argc, char* argv[])
 {
-    using T = float;
-    constexpr int dim = 3;
-    using TV = Eigen::Matrix<T,dim,1>;
+    // grid parameters
+    TV min_corner = TV::Zero();
+    TV max_corner = TV::Zero();
+
+    for (int i = 0; i < dim; i++) {
+        min_corner(i) = std::numeric_limits<float>::max();
+        max_corner(i) = std::numeric_limits<float>::min();
+    }
 
     std::vector<MeshObject*> meshes;
+
 
     if (argc > 1) {
         printf("importing meshes...\n");
 
         for (int i = 1; i < argc; i++) {
             printf("importing mesh with the file path: %s\n", argv[i]);
-            import_mesh(meshes, argv[i]);
+
+            std::vector<double> positions;
+            std::vector<int> idx;
+            parse_mesh(argv[i], positions, idx);
+
+            int num_vertices = positions.size() / 3;
+            int num_tri = idx.size() / 3;
+            MeshObject *m = construct_mesh_object(num_vertices, positions.data(),
+                                                  num_tri, idx.data());
+            meshes.push_back(m);
+
+            compute_bounds(min_corner, max_corner, positions);
         }
 
         printf("finished importing meshes.\n");
     }
 
-    int num_vert = 4;
-    std::vector<double> vert = { 0, 0, 0,
-                                 0, 1, 0,
-                                 1, 1, 0,
-                                 1, 0, 0 };
-    int num_tri = 2;
-    std::vector<int> tri = { 1, 2, 3, 1, 3, 4 };
-    MeshObject* m = construct_mesh_object(num_vert, vert.data(), num_tri, tri.data());
+    std::cout << "min_corner" << std::endl;
+    std::cout << min_corner << std::endl;
+    std::cout << "max_corner" << std::endl;
+    std::cout << max_corner << std::endl;
 
-    // grid parameters
-    TV min_corner = TV::Zero();
-    TV max_corner = TV::Ones();
     T dx = 0.05;
 
     T E = 1e4;
@@ -117,7 +141,5 @@ int main(int argc, char* argv[])
 
     // simulate
     //driver.run(240);
-
-    destroy_mesh_object(m);
     return 0;
 }
