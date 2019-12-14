@@ -324,8 +324,42 @@ public:
     MPMSystem(TV min, TV max, T dx)
         : grid(min, max, dx) {}
 
-    void populate_meshes(std::vector<MeshObject*> meshes) {
-        
+    void populate_meshes(std::vector<MeshObject*> &meshes) {
+        T rho = 1e5;   // density
+        T vol = (grid.dx * grid.dx) / 8;
+        T mass = vol * rho;
+
+        for (int i = 1; i < grid.res(0)-1; i++) {
+            for (int j = 1; j < grid.res(1)-1; j++) {
+                for (int k = 1; k < grid.res(2)-1; k++) {
+                    // node position
+                    TV n_x = grid.min_corner + TV(i,j,k) * grid.dx;
+
+                    // stratified sampling
+                    for (int n = 0; n < 8; n++) {
+                        int print_count = 1;
+                        TV p_x = n_x;
+                        std::vector<double> point;
+
+                        for (int d = 0; d < dim; d++) {
+                            T r = (((T) rand()) / RAND_MAX) * grid.dx;
+                            r -= grid.dx / 2;
+                            p_x(d) += r;
+                            point.push_back(p_x(d));
+                        }
+
+                        for (const auto mesh : meshes) {
+                            if (point_inside_mesh(point.data(), mesh)) {
+                                Particle<T,dim> p(p_x, mass, vol);
+                                particles.push_back(p);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        printf("number of particles: %d\n", int(particles.size()));
     }
 
     void populate_cube(TV min, TV max) {

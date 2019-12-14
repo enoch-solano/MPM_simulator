@@ -103,26 +103,40 @@ int main(int argc, char* argv[])
     }
 
     std::vector<MeshObject*> meshes;
+    std::vector<double> positions;
+    std::vector<int> idx;
 
 
     if (argc > 1) {
         printf("importing meshes...\n");
 
-        for (int i = 1; i < argc; i++) {
-            printf("importing mesh with the file path: %s\n", argv[i]);
+        // for (int i = 1; i < argc; i++) {
+            printf("importing mesh with the file path: %s\n", argv[1]);
 
-            std::vector<double> positions;
-            std::vector<int> idx;
-            parse_mesh(argv[i], positions, idx);
+            parse_mesh(argv[1], positions, idx);
 
             int num_vertices = positions.size() / 3;
             int num_tri = idx.size() / 3;
+
+            compute_bounds(min_corner, max_corner, positions);
+
+            // shifts it so that the origin is at (0,0,0)
+            for (int idx = 0; idx < positions.size(); idx += dim) {
+                for (int d = 0; d < dim; d++) {
+                    positions[idx + d] -= min_corner(d);
+                    positions[idx + d] += 4;
+                }
+            }
+
+            max_corner -= min_corner;
+            min_corner = TV::Zero();
+
+
+
             MeshObject *m = construct_mesh_object(num_vertices, positions.data(),
                                                   num_tri, idx.data());
             meshes.push_back(m);
-
-            compute_bounds(min_corner, max_corner, positions);
-        }
+        // }
 
         printf("finished importing meshes.\n");
     }
@@ -132,14 +146,26 @@ int main(int argc, char* argv[])
     std::cout << "max_corner" << std::endl;
     std::cout << max_corner << std::endl;
 
-    T dx = 0.05;
+    max_corner *= 6;
 
-    T E = 1e4;
-    T nu = 0.3;
+    std::cout << "new min_corner" << std::endl;
+    std::cout << min_corner << std::endl;
+    std::cout << "new max_corner" << std::endl;
+    std::cout << max_corner << std::endl;
 
-    SimulationDriver<T,dim> driver(min_corner, max_corner, dx, E, nu);
+    T dx = 0.15;
+
+    T E = 1e7;
+    T nu = 1e-4;
+
+    SimulationDriver<T,dim> driver(min_corner, max_corner, dx, E, nu, meshes);
 
     // simulate
-    //driver.run(240);
+    driver.run(120+1);
+
+    for (auto m : meshes) {
+        destroy_mesh_object(m);
+    }
+
     return 0;
 }

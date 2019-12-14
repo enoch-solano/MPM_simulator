@@ -294,6 +294,7 @@ struct MeshObject
             // check any triangles in this node
             for(unsigned int i=0; i<node->index.size(); ++i){
                 int t=node->index[i];
+
                 if(tri_zcast(p, x[tri[t][0]], x[tri[t][1]], x[tri[t][2]]))
                     ++intersection_count;
             }
