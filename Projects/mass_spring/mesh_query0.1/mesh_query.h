@@ -124,7 +124,7 @@ tri_zcast_inner(const Vec3d& p,
         assert(r[0]>s[0]); // r!=s because triangle is not degenerate
         return false;
     }
-    
+
     // check if point is strictly on edge sq
     if(psq==0 && pqr>0 && prs>0){
         if(s[1]<q[1]) return false;
@@ -133,17 +133,17 @@ tri_zcast_inner(const Vec3d& p,
         assert(s[0]>q[0]); // r!=s because triangle is not degenerate
         return false;
     }
-   
+
     // check if point is on vertex q
     if(p[0]==q[0] && p[1]==q[1]){
         return q[1]>=r[1] && q[1]<s[1];
     }
-   
+
     // check if point is on vertex r
     if(p[0]==r[0] && p[1]==r[1]){
         return r[1]>=s[1] && r[1]<q[1];
     }
-   
+
     // check if point is on vertex s
     if(p[0]==s[0] && p[1]==s[1]){
         return s[1]>=q[1] && s[1]<r[1];
@@ -294,6 +294,7 @@ struct MeshObject
             // check any triangles in this node
             for(unsigned int i=0; i<node->index.size(); ++i){
                 int t=node->index[i];
+
                 if(tri_zcast(p, x[tri[t][0]], x[tri[t][1]], x[tri[t][2]]))
                     ++intersection_count;
             }

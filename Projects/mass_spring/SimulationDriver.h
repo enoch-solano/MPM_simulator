@@ -28,7 +28,7 @@ public:
     T lambda;
 
 
-    SimulationDriver(TV min, TV max, T dx, T E, T nu)
+    SimulationDriver(TV min, TV max, T dx, T E, T nu, std::vector<MeshObject*> &meshes)
       : mpm(min, max, dx), dt((T)1e-3), E(E), nu(nu)
     {
         mu = E / (2 * (1 + nu));
@@ -45,7 +45,10 @@ public:
         TV min_box = TV::Ones()*0.3;
         TV max_box = TV::Ones()*0.7;
 
-        mpm.populate_cube(min_box, max_box);
+        // mpm.populate_cube(min_box, max_box);
+        printf("populating mesh particles...\n");
+        mpm.populate_meshes(meshes);
+        printf("finished populating mesh particles.\n");
     }
 
     void run(const int max_frame)
