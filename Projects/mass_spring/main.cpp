@@ -17,14 +17,6 @@ using T = float;
 constexpr int dim = 3;
 using TV = Eigen::Matrix<T,dim,1>;
 
-void triangulate(std::vector<int> &idx, std::vector<int> &face_idx) {
-    for (int i = 0; i < face_idx.size()-2; i++) {
-        idx.push_back(face_idx[0]);
-        idx.push_back(face_idx[i+1]);
-        idx.push_back(face_idx[i+2]);
-    }
-}
-
 void compute_bounds(TV &min, TV &max, std::vector<double> &positions) {
     for (int v = 0; v < positions.size(); v += 3) {
         for (int i = 0; i < 3; i++) {
@@ -36,6 +28,14 @@ void compute_bounds(TV &min, TV &max, std::vector<double> &positions) {
                 max(i) = positions[v+i];
             }
         }
+    }
+}
+
+void triangulate(std::vector<int> &idx, std::vector<int> &face_idx) {
+    for (int i = 0; i < face_idx.size()-2; i++) {
+        idx.push_back(face_idx[0]);
+        idx.push_back(face_idx[i+1]);
+        idx.push_back(face_idx[i+2]);
     }
 }
 
@@ -98,73 +98,79 @@ int main(int argc, char* argv[])
     TV max_corner = TV::Zero();
 
     for (int i = 0; i < dim; i++) {
-        min_corner(i) = std::numeric_limits<float>::max();
-        max_corner(i) = std::numeric_limits<float>::min();
+        min_corner(i) = std::numeric_limits<T>::max();
+        max_corner(i) = std::numeric_limits<T>::min();
     }
 
     std::vector<MeshObject*> meshes;
-    std::vector<double> positions;
-    std::vector<int> idx;
+
+    std::vector<std::vector<double>> positions;
+    std::vector<std::vector<int>> idx;
+
+    if (argc > 1) {
+        for (int i = 1; i < argc; i++) {
+            positions.push_back(std::vector<double>());
+            idx.push_back(std::vector<int>());
+        }
+    }
 
 
     if (argc > 1) {
         printf("importing meshes...\n");
 
-        // for (int i = 1; i < argc; i++) {
-            printf("importing mesh with the file path: %s\n", argv[1]);
+        for (int i = 1; i < argc; i++) {
+            printf("importing mesh with the file path: %s...\n", argv[i]);
 
-            parse_mesh(argv[1], positions, idx);
+            parse_mesh(argv[i], positions[i-1], idx[i-1]);
 
-            int num_vertices = positions.size() / 3;
-            int num_tri = idx.size() / 3;
+            printf("finished importing mesh with the file path: %s.\n", argv[i]);
 
-            compute_bounds(min_corner, max_corner, positions);
+            int num_vertices = positions[i-1].size() / 3;
+            int num_tri = idx[i-1].size() / 3;
 
-            // shifts it so that the origin is at (0,0,0)
-            for (int idx = 0; idx < positions.size(); idx += dim) {
-                for (int d = 0; d < dim; d++) {
-                    positions[idx + d] -= min_corner(d);
-                    positions[idx + d] += 4;
-                }
+            printf("got %d vertices with %d triangles\n", num_vertices, num_tri);
+
+
+            compute_bounds(min_corner, max_corner, positions[i-1]);
+
+            for (auto &p : positions[i-1]) {
+                p += 1.5;
             }
 
-            max_corner -= min_corner;
-            min_corner = TV::Zero();
-
-
-
-            MeshObject *m = construct_mesh_object(num_vertices, positions.data(),
-                                                  num_tri, idx.data());
+            MeshObject *m = construct_mesh_object(num_vertices, positions[i-1].data(),
+                                                  num_tri, idx[i-1].data());
             meshes.push_back(m);
-        // }
+        }
 
         printf("finished importing meshes.\n");
     }
+
+    min_corner = TV::Zero();
+    T max_val = max_corner(0);
+    for (int i = 0; i < dim; i++) {
+        max_val = max_val < max_corner(i) ? max_corner(i) : max_val;
+    }
+
+    max_corner = TV::Ones() * (max_val + 3.5);
 
     std::cout << "min_corner" << std::endl;
     std::cout << min_corner << std::endl;
     std::cout << "max_corner" << std::endl;
     std::cout << max_corner << std::endl;
 
-    max_corner *= 6;
 
-    std::cout << "new min_corner" << std::endl;
-    std::cout << min_corner << std::endl;
-    std::cout << "new max_corner" << std::endl;
-    std::cout << max_corner << std::endl;
+    T dx = 0.05;
 
-    T dx = 0.15;
-
-    T E = 1e7;
+    T E = 1e6;
     T nu = 1e-4;
 
     SimulationDriver<T,dim> driver(min_corner, max_corner, dx, E, nu, meshes);
 
     // simulate
-    driver.run(120+1);
+    driver.run(1+1);
 
-    for (auto m : meshes) {
-        destroy_mesh_object(m);
+    for (int i = 0; i < meshes.size(); i++) {
+        destroy_mesh_object(meshes[i]);
     }
 
     return 0;

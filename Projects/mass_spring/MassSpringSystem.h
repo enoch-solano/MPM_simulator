@@ -325,7 +325,7 @@ public:
         : grid(min, max, dx) {}
 
     void populate_meshes(std::vector<MeshObject*> &meshes) {
-        T rho = 1e5;   // density
+        T rho = 1e3;   // density
         T vol = (grid.dx * grid.dx) / 8;
         T mass = vol * rho;
 
@@ -348,8 +348,9 @@ public:
                             point.push_back(p_x(d));
                         }
 
-                        for (const auto mesh : meshes) {
-                            if (point_inside_mesh(point.data(), mesh)) {
+                        for (int i = 0; i < meshes.size(); i++) {
+
+                            if (point_inside_mesh(point.data(), meshes[i])) {
                                 Particle<T,dim> p(p_x, mass, vol);
                                 particles.push_back(p);
                             }

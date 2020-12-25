@@ -53,13 +53,6 @@ public:
 
     void run(const int max_frame)
     {
-        // TM ex = TM::Random();
-        // std::cout << ex << std::endl;
-        // for (int i = 0; i < dim; i++) {
-        //     ex(i, dim-1) *= -1;
-        // }
-        // std::cout << ex << std::endl;
-
         for(int frame = 1; frame < max_frame; frame++) {
             std::cout << "Frame " << frame << std::endl;
 
@@ -83,21 +76,10 @@ public:
         //         printf("f: (%.3f, %.3f, %.3f)\n", mpm.grid.f(i)[0], mpm.grid.f(i)[1], mpm.grid.f(i)[2]);
         //     }
         // }
-
-        // TODO: (sanity checks)
-        // compute total particle momentum before p2g
-        // compute total grid momentum after p2g
-
         mpm.compute_weights_3D();
-        // mpm.sanity_check();
-        // mpm.print_particles();
-
-
-
+        
         // transfer particle momentum to grid
         mpm.transfer_P2G();
-        // mpm.grid.print_active_nodes();
-
 
         // compute force on grid
         mpm.addGravity(gravity);

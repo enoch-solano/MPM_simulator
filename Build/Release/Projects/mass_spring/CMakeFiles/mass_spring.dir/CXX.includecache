@@ -21,6 +21,8 @@ stdio.h
 -
 stdlib.h
 -
+mesh_query0.1/mesh_query.h
+/home/enoch/Desktop/cis563/projects/project03/cis563-2019-assignment/Projects/mass_spring/mesh_query0.1/mesh_query.h
 
 /home/enoch/Desktop/cis563/projects/project03/cis563-2019-assignment/Projects/mass_spring/SimulationDriver.h
 Eigen/Sparse
@@ -52,6 +54,8 @@ cstdlib
 random
 -
 chrono
+-
+boost/tokenizer.hpp
 -
 mesh_query0.1/mesh_query.h
 /home/enoch/Desktop/cis563/projects/project03/cis563-2019-assignment/Projects/mass_spring/mesh_query0.1/mesh_query.h
